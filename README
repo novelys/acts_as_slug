@@ -3,6 +3,8 @@ ActsAsSlug
 
 Simple plugin to manage slugs in models.
 
+You must install Novelys_Hack plugin in order for this plugin to work (https://github.com/yannski/novelys_hacks/tree).
+
 Usage
 =====
 
@@ -35,6 +37,27 @@ if the object cannot be retrieved :
 - if append_id is set, it raise AR::RecordNotFound if the given id is not found. If the id is good but the slug is bad, it raises a SlugError exception. The good thing is that you
 can catch the exception in ApplicationController and redirect to the good URL thanks to the retrieved_element attribute of the exception that contains the current element.
 - if append_id is not set, it uses the slug column to find the element. If the element is not found, it raises AR::RecordNotFound.
+
+Using SlugError
+===============
+
+The great thing about this plugin is that if you use append_id, you can easily catch modification in the slug and redirect your users to the new model URL.
+This is great for Search Engines Optimization (SEO) !
+For example, a model Recipe has :
+
+acts_as_slug [:title], :append_id => true
+
+A model instance has a title "My good cake", and its slug is : "my-good-cake-8". If the title changes, the slug changes as well. For example, the new slug is now : "my-great-cake-8".
+You want your users to be redirected from /recipes/my-good-cake-8 to /recipes/my-great-cake-8, it is easy, just add this in your ApplicationController :
+
+def rescue_action(e)
+  case e
+  when SlugError
+    redirect_to polymorphic_url(e.retrieved_element), :status => :moved_permanently
+  else
+    super
+  end
+end
 
 Features
 ========
