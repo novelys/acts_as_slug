@@ -10,7 +10,7 @@ Models should have a slug column (string/varchar).
 
 acts_as_slug(slug_array, slug_options)
 
-options is a hash that must contain :with key and with optional :separator key. 
+options is a hash that may contains optional :separator and :append_id keys. 
 
 Add :
 acts_as_slug [:title]
@@ -27,7 +27,7 @@ options can be :
 
 If you want to use different separators like '-by-', you should deactivate separator by specifying :separator => false.
 
-Use a symbol to reference a column of the model, use a string for a static string, use an array of symbols/strings for models associations.
+Use a symbol to reference a column of the model, use a string to reference an association (ie.: "address.locality.name"), use a string beginning and ending by "/" for a static string (ie.: "/-by-/").
 
 Note : when using find_with_slug!, if append_id option is set it uses the final id to find the object, otherwise it uses the slug column to find the object.
 
@@ -46,13 +46,17 @@ Features
 Examples
 ========
 
-acts_as_slug [:title, '-by-', [:author, :login]], :separator => false
+acts_as_slug [:title, '/-by-/', "author.login"], :separator => false
 
 will create a slug like "loki-by-alexandre"
 
-acts_as_slug [:title, [:author, :login]], :separator => '_'
+acts_as_slug [:title, "author.login"], :separator => '_'
 
 will create a slug like "loki_alexandre"
+
+acts_as_slug [:title], :append_id => true
+
+will create a slug like "loki-9"
 
 
 Copyright (c) 2008 Novelys Team, released under the MIT license
