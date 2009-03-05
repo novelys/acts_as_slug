@@ -1,0 +1,58 @@
+ActsAsSlug
+==========
+
+Simple plugin to manage slugs in models.
+
+Usage
+=====
+
+Models should have a slug column (string/varchar).
+
+acts_as_slug(slug_array, slug_options)
+
+options is a hash that must contain :with key and with optional :separator key. 
+
+Add :
+acts_as_slug [:title]
+
+To handle a slug using the title column.
+
+slug_array parameter is an Array.
+
+options can be :
+
+:separator is a String that will be used to join the elements in order to create the slug.
+
+:append_id : if set, acts_as_slug will not use a slug column to save the slug, but will generate dynamicaly a slug based on the slug_array and append the object id.
+
+If you want to use different separators like '-by-', you should deactivate separator by specifying :separator => false.
+
+Use a symbol to reference a column of the model, use a string for a static string, use an array of symbols/strings for models associations.
+
+Note : when using find_with_slug!, if append_id option is set it uses the final id to find the object, otherwise it uses the slug column to find the object.
+
+if the object cannot be retrieved :
+- if append_id is set, it raise AR::RecordNotFound if the given id is not found. If the id is good but the slug is bad, it raises a SlugError exception. The good thing is that you
+can catch the exception in ApplicationController and redirect to the good URL thanks to the retrieved_element attribute of the exception that contains the current element.
+- if append_id is not set, it uses the slug column to find the element. If the element is not found, it raises AR::RecordNotFound.
+
+Features
+========
+
+* Auto-sanitization of parameters for clean URLs (you must have unicode gem installed).
+* Auto-incrementation of the slug. ActsAsSlug will add '-2' and so on if a record with the same slug exists.
+* Will not fail or raise exception if a given parameter is nil or invalid, it will simply ignore it.
+
+Examples
+========
+
+acts_as_slug [:title, '-by-', [:author, :login]], :separator => false
+
+will create a slug like "loki-by-alexandre"
+
+acts_as_slug [:title, [:author, :login]], :separator => '_'
+
+will create a slug like "loki_alexandre"
+
+
+Copyright (c) 2008 Novelys Team, released under the MIT license
