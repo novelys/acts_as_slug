@@ -39,7 +39,7 @@ module ActiveRecord
           unless slug_options[:append_id] == true
             new_slug = self.to_slug
             conditions = self.new_record? ? ["slug like ?", new_slug + "%"] : ["slug like ? and id <> ?", new_slug + "%", self.id]
-            elements = self.class.find(:all, :conditions => conditions, :order => "slug ASC")
+            elements = self.class.find(:all, :conditions => conditions, :order => "slug ASC").find_all {|o| o.slug_base == self.slug_base }
             self.slug = elements.empty? ? new_slug : new_slug + "-" + (elements.size + 1).to_s
           end
         end
