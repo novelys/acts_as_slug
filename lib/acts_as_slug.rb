@@ -8,6 +8,8 @@ module ActiveRecord
       module ClassMethods
         def acts_as_slug(slug_array, options = {})
           
+          raise "You need novelys_hacks plugin in order to use the acts_as_slug plugin" unless String.new.respond_to?(:to_slug)
+          
           write_inheritable_attribute(:slug_array, slug_array)
           class_inheritable_reader :slug_array
           write_inheritable_attribute(:slug_options, options)
