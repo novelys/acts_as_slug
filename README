@@ -3,12 +3,14 @@ ActsAsSlug
 
 Simple plugin to manage slugs in models.
 
-You must install Novelys_Hack plugin in order for this plugin to work (https://github.com/yannski/novelys_hacks/tree).
+You must install Novelys_Hack plugin in order for this plugin to work : https://github.com/yannski/novelys_hacks/tree
 
 Usage
 =====
 
-Models should have a slug column (string/varchar).
+You can use acts_as_slug in two different ways. The first one is if you want to name your models instances like "xxxxxx-id" (with the id at the end).
+The second way is if you don't want an id. If you don't want a the object id to be part of the slug, you have to add a varchar/string slug column in your model
+table. 
 
 acts_as_slug(slug_array, slug_options)
 
@@ -62,9 +64,9 @@ end
 Features
 ========
 
-* Auto-sanitization of parameters for clean URLs (you must have unicode gem installed).
-* Auto-incrementation of the slug. ActsAsSlug will add '-2' and so on if a record with the same slug exists.
-* Will not fail or raise exception if a given parameter is nil or invalid, it will simply ignore it.
+* Auto-sanitization of parameters for clean URLs (you must have unicode gem installed UNLESS you use Rails >= 2.2).
+* Auto-incrementation of the slug if you use a slug column. ActsAsSlug will add '-2' and so on if a record with the same slug exists.
+* Will not fail or raise exception if a given parameter is nil or invalid when generating the slug, it will simply ignore the paramater.
 
 Examples
 ========
@@ -82,4 +84,4 @@ acts_as_slug [:title], :append_id => true
 will create a slug like "loki-9"
 
 
-Copyright (c) 2008 Novelys Team, released under the MIT license
+Copyright (c) 2008-2009 Novelys Team, released under the MIT license
