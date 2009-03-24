@@ -70,12 +70,11 @@ module ActiveRecord
         end
         
         def slug_base
-          return current_slug =~ /\A(.*)-([0-9]+)\Z/ ? current_slug.slice(/\A(.*)-([0-9]+)\Z/, 1) : current_slug
+          SlugUtilities.base_from_slug(current_slug)
         end
         
         def slug_id
-          return current_slug if current_slug =~ /\A[0-9]+\Z/
-          return current_slug =~ /\A(.*)-([0-9]+)\Z/ ? current_slug.slice(/\A(.*)-([0-9]+)\Z/, 2) : nil
+          SlugUtilities.id_from_slug(current_slug)
         end
       end #module InstanceMethods
     end #module Related
