@@ -43,13 +43,16 @@ module ActiveRecord
       module InstanceMethods
         
         def before_save
-          new_slug = self.make_slug
-          conditions = self.new_record? ? ["slug like ?", new_slug + "%"] : ["slug like ? and id <> ?", new_slug + "%", self.id]
-          elements = self.class.find(:all, :conditions => conditions, :order => "slug ASC").find_all {|o| o.slug_base == SlugUtilities.base_from_slug(new_slug) }
-          self.slug = elements.empty? ? new_slug : new_slug + "-" + (elements.size + 1).to_s
+          unless slug_options[:append_id] == true
+            new_slug = self.make_slug
+            conditions = self.new_record? ? ["slug like ?", new_slug + "%"] : ["slug like ? and id <> ?", new_slug + "%", self.id]
+            elements = self.class.find(:all, :conditions => conditions, :order => "slug ASC").find_all {|o| o.slug_base == SlugUtilities.base_from_slug(new_slug) }
+            self.slug = elements.empty? ? new_slug : new_slug + "-" + (elements.size + 1).to_s
+          end
         end
         
         def after_save
+          update_slug! if slug.blank? 
           @current_slug = nil
         end
 
