@@ -43,17 +43,21 @@ module ActiveRecord
       module InstanceMethods
         
         def before_save
-          unless slug_options[:append_id] == true
+          if slug_options[:append_id] == true
+            self.slug = make_slug unless new_record?
+          else
             new_slug = self.make_slug
             conditions = self.new_record? ? ["slug like ?", new_slug + "%"] : ["slug like ? and id <> ?", new_slug + "%", self.id]
             elements = self.class.find(:all, :conditions => conditions, :order => "slug ASC").find_all {|o| o.slug_base == SlugUtilities.base_from_slug(new_slug) }
             self.slug = elements.empty? ? new_slug : new_slug + "-" + (elements.size + 1).to_s
           end
+          true
         end
         
         def after_save
-          update_slug! if slug.blank? 
+          update_slug! if slug.blank?
           @current_slug = nil
+          true
         end
 
         def to_param
@@ -86,7 +90,10 @@ module ActiveRecord
         end
 
         def update_slug!
-          self.update_attribute :slug, make_slug
+          # self.update_attribute :slug, make_slug
+          # we use update_all to prevent execution in loop of before_save/after_save
+          self.class.update_all("slug = '#{make_slug}'", :id => self.id)
+          self.reload
         rescue
           make_slug
         end
